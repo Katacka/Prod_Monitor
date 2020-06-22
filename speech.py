@@ -1,0 +1,38 @@
+import speech_recognition as sr
+from playsound import playsound
+
+"""
+TODO
+  - Suppress ALSA/jackShm warnings
+  - Reduce mic activation delays
+"""
+class Speech_Handler:
+    def __init__(self, record_sound: str="record_sound.mp3",
+                 success_sound: str="success_sound.mp3", error_sound: str="error.mp3"):
+        #Config params
+        self.record_sound = f"sound_effects/{record_sound}"
+        self.success_sound = f"sound_effects/{success_sound}"
+        self.error_sound = f"sound_effects/{error_sound}"
+        
+        #Voice to text setup
+        self.rec = sr.Recognizer()
+        self.__setup_mic()
+
+    def __setup_mic(self):
+        """Creates a speech_recognition mic object for the purpose of capturing audio"""
+        self.mic = sr.Microphone()
+
+    def transcribe_input(self):
+        """Uses {self.mic} to transcribe audio input"""
+        with self.mic as source:
+            self.rec.adjust_for_ambient_noise(source, duration=0.5)
+            playsound(self.record_sound)
+            audio = self.rec.listen(source)
+
+        try:
+            parsed_text = self.rec.recognize_google(audio)
+            playsound(self.success_sound)
+            return parsed_text
+        except sr.UnknownValueError:
+            playsound(self.error_sound)
+            return None
