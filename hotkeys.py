@@ -7,6 +7,8 @@ KeyListenerFunction = Callable[[], None]
 
 
 class HotKeys:
+    """TODO: add Mac support for the key bindings."""
+    
     def __init__(self, bindings: Dict[KeySet, KeyListenerFunction]):
         self.bindings = bindings
         self.pressed_vks = set()
@@ -39,6 +41,8 @@ class HotKeys:
         Args:
             key - A pynput.keyboard Key object
         """
+        print("An on_press event was registered with key: " + str(key))
+
         vk = self.get_vk(key)  # Get the key's vk
         self.pressed_vks.add(vk)  # Add it to the set of currently pressed keys
 
@@ -54,6 +58,9 @@ class HotKeys:
         Args:
             key - A pynput.keyboard Key object
         """
+
+        print("An on_release event was registered with key: " + str(key))
+
         vk = self.get_vk(key)  # Get the key's vk
         if vk in self.pressed_vks:
             self.pressed_vks.remove(vk)  # Remove it from the set of currently pressed keys
@@ -61,4 +68,5 @@ class HotKeys:
     def setup_listener(self) -> None:
         """Creates a daemon listening for hotkey bindings"""
         with Listener(on_press=self.on_press, on_release=self.on_release) as listener:
+            print("Listener joining...")
             listener.join()
