@@ -11,15 +11,14 @@ class Sound:
     error_sound: str = "error.mp3"
 
 
-"""
-TODO
-  - Suppress ALSA/jackShm warnings
-  - Reduce mic activation delays
-    - Reduce audio file IO overhead
-"""
+class SpeechHandler:
+    """
+    TODO
+      - Suppress ALSA/jackShm warnings
+      - Reduce mic activation delays
+        - Reduce audio file IO overhead
+    """
 
-
-class Speech_Handler:
     def __init__(self, sound: Sound = Sound()):
         # Config params
         self.record_sound = f"sound_effects/{sound.record_sound}"

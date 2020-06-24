@@ -1,12 +1,13 @@
 from pynput.keyboard import Key, Listener
 
 
-class Hot_Keys:
+class HotKeys:
     def __init__(self, bindings):
         self.bindings = bindings
         self.pressed_vks = set()
 
-    def get_vk(self, key: Key):
+    @staticmethod
+    def get_vk(key: Key) -> int:
         """Returns the virtual keycode for a given key
 
         Args:
@@ -17,7 +18,7 @@ class Hot_Keys:
         """
         return key.vk if hasattr(key, 'vk') else key.value.vk
 
-    def is_combination_pressed(self, combination: frozenset):
+    def is_combination_pressed(self, combination: frozenset) -> bool:
         """Determines if a given key combination is currently pressed
 
         Returns:
@@ -25,7 +26,7 @@ class Hot_Keys:
         """
         return all([self.get_vk(key) in self.pressed_vks for key in combination])
 
-    def on_press(self, key):
+    def on_press(self, key: Key) -> None:
         """Event call activating on key press
 
         Updates the status of the pressed key. Activates satisfied hotkey bindings 
@@ -40,7 +41,7 @@ class Hot_Keys:
             if self.is_combination_pressed(combination):  # Check if all keys in the combination are pressed
                 self.bindings[combination]()  # If so, execute the function
 
-    def on_release(self, key):
+    def on_release(self, key: Key) -> None:
         """Event call activating on key release
 
         Updates the status of the pressed key
@@ -52,7 +53,7 @@ class Hot_Keys:
         if vk in self.pressed_vks:
             self.pressed_vks.remove(vk)  # Remove it from the set of currently pressed keys
 
-    def setup_listener(self):
+    def setup_listener(self) -> None:
         """Creates a daemon listening for hotkey bindings"""
         with Listener(on_press=self.on_press, on_release=self.on_release) as listener:
             listener.join()

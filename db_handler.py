@@ -1,21 +1,31 @@
+from dataclasses import dataclass
+
 import mysql.connector as sql
 
-"""
-TODO
- - Convert DB_Handler to ORM
- - Swap insert for upsert
-"""
+
+@dataclass
+class DatabaseInfo:
+    user: str
+    password: str
+    host: str = "127.0.0.1"
+    database: str = "prod_monitor"
+    task_table: str = "tasks"
 
 
-class DB_Handler():
-    def __init__(self, user: str, password: str, host: str = "127.0.0.1",
-                 database: str = "prod_monitor", task_table: str = "tasks"):
+class DatabaseHandler:
+    """
+    TODO
+     - Convert DB_Handler to ORM
+     - Swap insert for upsert
+    """
+
+    def __init__(self, database_info: DatabaseInfo):
         # SQL config params
-        self.user = user
-        self.password = password
-        self.host = host
-        self.db = database
-        self.task_table = task_table
+        self.user = database_info.user
+        self.password = database_info.password
+        self.host = database_info.host
+        self.db = database_info.database
+        self.task_table = database_info.task_table
 
         # Setup SQL Connection and DB
         self.sql = self.connect()
@@ -23,8 +33,7 @@ class DB_Handler():
     def connect(self):
         """Initiates a SQL database connection"""
         try:
-            return sql.connect(user=self.user, password=self.password,
-                               host=self.host)
+            return sql.connect(user=self.user, password=self.password, host=self.host)
         except sql.Error as err:
             if err.errno == sql.errorcode.ER_ACCESS_DENIED_ERROR:
                 print(f"Invalid SQL username or password: {err}")
@@ -46,7 +55,8 @@ class DB_Handler():
         try:
             cursor = self.sql.cursor()
             cursor.execute(
-                f"CREATE TABLE {self.db}.{self.task_table} (id varchar(64) NOT NULL, name varchar(64) NOT NULL, category varchar(64) DEFAULT NULL, PRIMARY KEY (`id`))")
+                f"CREATE TABLE {self.db}.{self.task_table} (id varchar(64) NOT NULL, name varchar(64) NOT NULL, category varchar(64) DEFAULT NULL, PRIMARY KEY (`id`))"
+            )
         except sql.Error as err:
             if err.errno == sql.errorcode.ER_TABLE_EXISTS_ERROR:
                 print(f"Table '{self.task_table}' already exists")
@@ -73,7 +83,8 @@ class DB_Handler():
         try:
             cursor = self.sql.cursor()
             cursor.execute(
-                f"INSERT INTO {self.db}.{self.task_table} (`id`, `name`, `category`) VALUES ('{task.id}', '{task.name}', '{task.category}')");
+                f"INSERT INTO {self.db}.{self.task_table} (`id`, `name`, `category`) VALUES ('{task.id}', '{task.name}', '{task.category}')"
+            )
             self.sql.commit()  # Ensure data is committed to DB
         except sql.Error as err:
             if err.errno == sql.errorcode.ER_BAD_DB_ERROR:
