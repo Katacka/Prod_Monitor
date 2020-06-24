@@ -1,8 +1,13 @@
-from pynput.keyboard import Key, Listener
+from typing import Dict, FrozenSet, Callable, Union
+
+from pynput.keyboard import Key, Listener, KeyCode
+
+KeySet = FrozenSet[Union[Key, KeyCode]]
+KeyListenerFunction = Callable[[], None]
 
 
 class HotKeys:
-    def __init__(self, bindings):
+    def __init__(self, bindings: Dict[KeySet, KeyListenerFunction]):
         self.bindings = bindings
         self.pressed_vks = set()
 

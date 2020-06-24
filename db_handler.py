@@ -1,6 +1,13 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
 
 import mysql.connector as sql
+from mysql.connector import MySQLConnection
+
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from monitor import Task
 
 
 @dataclass
@@ -30,7 +37,7 @@ class DatabaseHandler:
         # Setup SQL Connection and DB
         self.sql = self.connect()
 
-    def connect(self):
+    def connect(self) -> MySQLConnection:
         """Initiates a SQL database connection"""
         try:
             return sql.connect(user=self.user, password=self.password, host=self.host)
@@ -41,7 +48,7 @@ class DatabaseHandler:
                 print(err)
             exit(1)
 
-    def __setup_db(self):
+    def __setup_db(self) -> None:
         """Creates a database named '{self.db}' if one does not exist already"""
         try:
             cursor = self.sql.cursor()
@@ -50,13 +57,19 @@ class DatabaseHandler:
         except sql.Error as err:
             print(f"Database '{self.db}' failed on creation: {err}")
 
-    def __setup_task_table(self):
+    def __setup_task_table(self) -> None:
         """Creates a table named '{self.task_table}' purposed to store task data"""
         try:
             cursor = self.sql.cursor()
-            cursor.execute(
-                f"CREATE TABLE {self.db}.{self.task_table} (id varchar(64) NOT NULL, name varchar(64) NOT NULL, category varchar(64) DEFAULT NULL, PRIMARY KEY (`id`))"
-            )
+            cursor.execute((
+                f"CREATE TABLE {self.db}.{self.task_table} "
+                f"("
+                f"id varchar(64) NOT NULL, "
+                f"name varchar(64) NOT NULL, "
+                f"category varchar(64) DEFAULT NULL, "
+                f"PRIMARY KEY (`id`)"
+                f")"
+            ))
         except sql.Error as err:
             if err.errno == sql.errorcode.ER_TABLE_EXISTS_ERROR:
                 print(f"Table '{self.task_table}' already exists")
@@ -64,7 +77,7 @@ class DatabaseHandler:
                 print(f"__setup_task_table: {err}")
                 exit(1)
 
-    def __ensure_permissions(self):
+    def __ensure_permissions(self) -> None:
         """Grants {self.user} all privileges on {self.db}"""
         try:
             cursor = self.sql.cursor()
@@ -72,7 +85,7 @@ class DatabaseHandler:
         except sql.Error as err:
             print(f"Failed to grant {self.user} privileges on '{self.db}': {err}")
 
-    def store_task(self, task):
+    def store_task(self, task: Task) -> None:
         """Writes task data to the SQL DB's task table. 
         
         Creates the necessary DB/table if missing.
@@ -82,9 +95,10 @@ class DatabaseHandler:
         """
         try:
             cursor = self.sql.cursor()
-            cursor.execute(
-                f"INSERT INTO {self.db}.{self.task_table} (`id`, `name`, `category`) VALUES ('{task.id}', '{task.name}', '{task.category}')"
-            )
+            cursor.execute((
+                f"INSERT INTO {self.db}.{self.task_table} "
+                f"(`id`, `name`, `category`) VALUES ('{task.id}', '{task.name}', '{task.category}')"
+            ))
             self.sql.commit()  # Ensure data is committed to DB
         except sql.Error as err:
             if err.errno == sql.errorcode.ER_BAD_DB_ERROR:
@@ -98,7 +112,7 @@ class DatabaseHandler:
                 print(f"store_task: {err}")
                 exit(1)
 
-    def close(self):
+    def close(self) -> None:
         """Closes an SQL connection"""
         try:
             self.sql.close()

@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Optional
 
 import speech_recognition as sr
 from playsound import playsound
@@ -29,11 +30,11 @@ class SpeechHandler:
         self.rec = sr.Recognizer()
         self.__setup_mic()
 
-    def __setup_mic(self):
+    def __setup_mic(self) -> None:
         """Creates a speech_recognition mic object for the purpose of capturing audio"""
         self.mic = sr.Microphone()
 
-    def transcribe_input(self):
+    def transcribe_input(self) -> Optional[str]:
         """Uses {self.mic} to transcribe audio input"""
         with self.mic as source:
             self.rec.adjust_for_ambient_noise(source, duration=0.5)
