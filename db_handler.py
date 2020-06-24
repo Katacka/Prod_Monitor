@@ -47,9 +47,13 @@ class DatabaseHandler:
             else:
                 print(err)
             exit(1)
+        except:
+            print("Another error occurred when connecting to the database.")
 
     def __setup_db(self) -> None:
         """Creates a database named '{self.db}' if one does not exist already"""
+        print("Setting up database...")
+
         try:
             cursor = self.sql.cursor()
             cursor.execute(f"CREATE DATABASE {self.db} DEFAULT CHARACTER SET 'utf8'")
@@ -57,8 +61,12 @@ class DatabaseHandler:
         except sql.Error as err:
             print(f"Database '{self.db}' failed on creation: {err}")
 
+        print("Done setting up database.")
+
     def __setup_task_table(self) -> None:
         """Creates a table named '{self.task_table}' purposed to store task data"""
+        print("Setting up task table...")
+
         try:
             cursor = self.sql.cursor()
             cursor.execute((
@@ -76,6 +84,8 @@ class DatabaseHandler:
             else:
                 print(f"__setup_task_table: {err}")
                 exit(1)
+
+        print("Done setting up task table.")
 
     def __ensure_permissions(self) -> None:
         """Grants {self.user} all privileges on {self.db}"""
@@ -114,7 +124,12 @@ class DatabaseHandler:
 
     def close(self) -> None:
         """Closes an SQL connection"""
+
+        print("Closing SQL connection...")
+
         try:
             self.sql.close()
         except sql.Error as err:
             print(f"SQL connection failed to close: {err}")
+
+        print("Done closing SQL connection.")
