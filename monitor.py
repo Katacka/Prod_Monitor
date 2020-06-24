@@ -1,4 +1,6 @@
 import uuid
+from getpass import getpass
+
 from pynput.keyboard import Key, KeyCode
 from speech import Speech_Handler
 from hotkeys import Hot_Keys
@@ -17,7 +19,10 @@ class Prod_Monitor():
         self.speech = Speech_Handler()
 
         #DB setup
-        self.db = DB_Handler("julian", "Gatolocoe#4209")
+        user = input("Database username: ")
+        password = getpass()
+
+        self.db = DB_Handler(user, password)
         
         #Task context
         self.curr_task = Task()
