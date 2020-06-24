@@ -3,6 +3,7 @@ import mysql.connector as sql
 """
 TODO
  - Convert DB_Handler to ORM
+ - Swap insert for upsert
 """
 class DB_Handler():
     def __init__(self, user: str, password: str, host: str="127.0.0.1",

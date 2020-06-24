@@ -4,6 +4,13 @@ from speech import Speech_Handler
 from hotkeys import Hot_Keys
 from db_handler import DB_Handler
 
+"""
+TODO
+  - Accept password/username as command line params
+  - Specify custom keybinding through command line
+    - Read from config DB/json if no command line keybinding is specified
+  - Support for keywords (i.e. "label")
+"""
 class Prod_Monitor():
     def __init__(self):
         #Voice to text setup
@@ -32,7 +39,6 @@ class Prod_Monitor():
         if task:
             self.db.store_task(task)
             self.reset_task_context() #TODO - Special case this reset
-            
     
     def parse_input(self):
         """Extracts and processes text from audio input"""

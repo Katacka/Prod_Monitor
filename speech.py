@@ -5,6 +5,7 @@ from playsound import playsound
 TODO
   - Suppress ALSA/jackShm warnings
   - Reduce mic activation delays
+    - Reduce audio file IO overhead
 """
 class Speech_Handler:
     def __init__(self, record_sound: str="record_sound.mp3",
