@@ -13,23 +13,25 @@ TODO
     - Read from config DB/json if no command line keybinding is specified
   - Support for keywords (i.e. "label")
 """
-class Prod_Monitor():
+
+
+class Prod_Monitor:
     def __init__(self):
-        #Voice to text setup
+        # Voice to text setup
         self.speech = Speech_Handler()
 
-        #DB setup
+        # DB setup
         user = input("Database username: ")
         password = getpass()
 
         self.db = DB_Handler(user, password)
-        
-        #Task context
+
+        # Task context
         self.curr_task = Task()
 
-        #Hotkey setup
+        # Hotkey setup
         bindings = {
-            frozenset([Key.shift, KeyCode(vk=65)]): self.handle_input # Shift-a
+            frozenset([Key.shift, KeyCode(vk=65)]): self.handle_input  # Shift-a
         }
         self.hot_keys = Hot_Keys(bindings)
         self.hot_keys.setup_listener()
@@ -37,34 +39,36 @@ class Prod_Monitor():
     def reset_task_context(self):
         """Resets the current task to a new Task object"""
         self.curr_task = Task()
-        
+
     def handle_input(self):
         """Parses and stores audio input"""
         task = self.parse_input()
         if task:
             self.db.store_task(task)
-            self.reset_task_context() #TODO - Special case this reset
-    
+            self.reset_task_context()  # TODO - Special case this reset
+
     def parse_input(self):
         """Extracts and processes text from audio input"""
         input = self.speech.transcribe_input()
 
-        #Labels
-        #TODO - Fix obvious "label" conflicts, re-enable labels
+        # Labels
+        # TODO - Fix obvious "label" conflicts, re-enable labels
         try:
             if False and input.startswith("label"):
                 label_idx = input.find("label") + len("label")
                 processed_input = input[label_idx:].strip()
-                self.curr_task.addLabel(processed_input);
+                self.curr_task.addLabel(processed_input)
             else:
                 self.curr_task.setName(input)
             return self.curr_task
         except:
             return None
 
-    
+
 class Task():
-    def __init__(self, name: str=None, category: str="default", labels: list=[]):        
+    def __init__(self, name: str = None, category: str = "default", labels=None):
+        if labels is None:
+            labels = []
         self.id = uuid.uuid1()
         self.name = name
         self.category = category
@@ -81,6 +85,6 @@ class Task():
         """Appends a label to {self.labels}"""
         self.labels.append(label)
 
-        
+
 if __name__ == "__main__":
     pm = Prod_Monitor()

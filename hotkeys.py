@@ -1,6 +1,7 @@
-from pynput.keyboard import Key, KeyCode, Listener
+from pynput.keyboard import Key, Listener
 
-class Hot_Keys():
+
+class Hot_Keys:
     def __init__(self, bindings):
         self.bindings = bindings
         self.pressed_vks = set()
@@ -55,4 +56,3 @@ class Hot_Keys():
         """Creates a daemon listening for hotkey bindings"""
         with Listener(on_press=self.on_press, on_release=self.on_release) as listener:
             listener.join()
-    

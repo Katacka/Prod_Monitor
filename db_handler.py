@@ -5,17 +5,19 @@ TODO
  - Convert DB_Handler to ORM
  - Swap insert for upsert
 """
+
+
 class DB_Handler():
-    def __init__(self, user: str, password: str, host: str="127.0.0.1",
-                 database: str="prod_monitor", task_table: str="tasks"):
-        #SQL config params
+    def __init__(self, user: str, password: str, host: str = "127.0.0.1",
+                 database: str = "prod_monitor", task_table: str = "tasks"):
+        # SQL config params
         self.user = user
         self.password = password
         self.host = host
         self.db = database
         self.task_table = task_table
 
-        #Setup SQL Connection and DB
+        # Setup SQL Connection and DB
         self.sql = self.connect()
 
     def connect(self):
@@ -43,7 +45,8 @@ class DB_Handler():
         """Creates a table named '{self.task_table}' purposed to store task data"""
         try:
             cursor = self.sql.cursor()
-            cursor.execute(f"CREATE TABLE {self.db}.{self.task_table} (id varchar(64) NOT NULL, name varchar(64) NOT NULL, category varchar(64) DEFAULT NULL, PRIMARY KEY (`id`))")
+            cursor.execute(
+                f"CREATE TABLE {self.db}.{self.task_table} (id varchar(64) NOT NULL, name varchar(64) NOT NULL, category varchar(64) DEFAULT NULL, PRIMARY KEY (`id`))")
         except sql.Error as err:
             if err.errno == sql.errorcode.ER_TABLE_EXISTS_ERROR:
                 print(f"Table '{self.task_table}' already exists")
@@ -57,7 +60,7 @@ class DB_Handler():
             cursor = self.sql.cursor()
             cursor.execute(f"GRANT ALL PRIVILEGES ON {self.db}.* TO '{self.user}'@'localhost'")
         except sql.Error as err:
-            print(f"Failed to grant {self.user} privileges on '{self.db}': {err}")        
+            print(f"Failed to grant {self.user} privileges on '{self.db}': {err}")
 
     def store_task(self, task):
         """Writes task data to the SQL DB's task table. 
@@ -69,8 +72,9 @@ class DB_Handler():
         """
         try:
             cursor = self.sql.cursor()
-            cursor.execute(f"INSERT INTO {self.db}.{self.task_table} (`id`, `name`, `category`) VALUES ('{task.id}', '{task.name}', '{task.category}')");
-            self.sql.commit() #Ensure data is committed to DB
+            cursor.execute(
+                f"INSERT INTO {self.db}.{self.task_table} (`id`, `name`, `category`) VALUES ('{task.id}', '{task.name}', '{task.category}')");
+            self.sql.commit()  # Ensure data is committed to DB
         except sql.Error as err:
             if err.errno == sql.errorcode.ER_BAD_DB_ERROR:
                 self.__setup_db()
@@ -82,7 +86,7 @@ class DB_Handler():
             else:
                 print(f"store_task: {err}")
                 exit(1)
-            
+
     def close(self):
         """Closes an SQL connection"""
         try:

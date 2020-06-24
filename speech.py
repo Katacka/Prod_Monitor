@@ -1,5 +1,15 @@
+from dataclasses import dataclass
+
 import speech_recognition as sr
 from playsound import playsound
+
+
+@dataclass
+class Sound:
+    record_sound: str = "record_sound.mp3"
+    success_sound: str = "success_sound.mp3"
+    error_sound: str = "error.mp3"
+
 
 """
 TODO
@@ -7,15 +17,16 @@ TODO
   - Reduce mic activation delays
     - Reduce audio file IO overhead
 """
+
+
 class Speech_Handler:
-    def __init__(self, record_sound: str="record_sound.mp3",
-                 success_sound: str="success_sound.mp3", error_sound: str="error.mp3"):
-        #Config params
-        self.record_sound = f"sound_effects/{record_sound}"
-        self.success_sound = f"sound_effects/{success_sound}"
-        self.error_sound = f"sound_effects/{error_sound}"
-        
-        #Voice to text setup
+    def __init__(self, sound: Sound = Sound()):
+        # Config params
+        self.record_sound = f"sound_effects/{sound.record_sound}"
+        self.success_sound = f"sound_effects/{sound.success_sound}"
+        self.error_sound = f"sound_effects/{sound.error_sound}"
+
+        # Voice to text setup
         self.rec = sr.Recognizer()
         self.__setup_mic()
 
