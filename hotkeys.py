@@ -14,16 +14,23 @@ class HotKeys:
         self.pressed_vks = set()
 
     @staticmethod
-    def get_vk(key: Key) -> int:
+    def get_vk(key: Union[Key, KeyCode]) -> Union[int, str]:
         """Returns the virtual keycode for a given key
 
         Args:
-            key - A pynput.keyboard Key object
+            key - A pynput.keyboard Key or KeyCode object
 
-        Returns:
+        Returns (EITHER int or str):
             int - Contextual {key}'s virtual keycode
+            str - Contextual {key}'s string value
         """
-        return key.vk if hasattr(key, 'vk') else key.value.vk
+        if isinstance(key, Key):
+            return key.value.vk
+
+        if isinstance(key, KeyCode):
+            return key.char
+
+        raise ValueError("Wrong type passed to get_vk!")
 
     def is_combination_pressed(self, combination: frozenset) -> bool:
         """Determines if a given key combination is currently pressed
@@ -45,6 +52,8 @@ class HotKeys:
 
         vk = self.get_vk(key)  # Get the key's vk
         self.pressed_vks.add(vk)  # Add it to the set of currently pressed keys
+
+        print("Current pressed keys: " + str(self.pressed_vks))
 
         for combination in self.bindings:  # Loop through each combination
             if self.is_combination_pressed(combination):  # Check if all keys in the combination are pressed

@@ -33,7 +33,7 @@ class ProductivityMonitor:
 
         # Hotkey setup
         bindings = {
-            frozenset([Key.shift, KeyCode(vk=65)]): self.handle_input  # Shift-a
+            frozenset([Key.shift, KeyCode.from_char("a")]): self.handle_input  # Shift-a
         }
         self.hot_keys = HotKeys(bindings)
         self.hot_keys.setup_listener()
@@ -44,6 +44,8 @@ class ProductivityMonitor:
 
     def handle_input(self) -> None:
         """Parses and stores audio input"""
+        print("Parsing audio input now...")
+
         task = self.parse_input()
         if task:
             self.db.store_task(task)
